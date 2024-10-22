@@ -3,7 +3,7 @@ from web3 import Web3
 from concurrent.futures import ThreadPoolExecutor
 
 # Подключение к RPC-узлу сети Base
-web3 = Web3(Web3.HTTPProvider('https://base-mainnet.rpcurl.com'))  # Замените на правильный RPC узел
+web3 = Web3(Web3.HTTPProvider('https://base-rpc.publicnode.com'))  # Замените на правильный RPC узел
 
 # Проверяем подключение
 if not web3.is_connected():
@@ -11,8 +11,8 @@ if not web3.is_connected():
     exit()
 
 # Данные кошелька отправителя
-sender_address = '0xYourSenderAddress'  # Замените на ваш адрес отправителя
-private_key = '0xYourPrivateKey'        # Замените на ваш приватный ключ
+sender_address = ''  # Замените на ваш адрес отправителя
+private_key = ''        # Замените на ваш приватный ключ
 
 # Чтение списка адресов из файла
 def read_recipients_from_file(file_path):
@@ -23,23 +23,28 @@ def read_recipients_from_file(file_path):
 # Функция отправки эфира
 def send_ether(recipient, amount, nonce, gas_price, delay):
     try:
+        # Проверяем, что адрес получателя корректен
+        if not web3.is_address(recipient):
+            raise ValueError(f"Некорректный адрес: {recipient}")
+
         # Подготовка транзакции
         tx = {
             'nonce': nonce,
-            'to': recipient,
-            'value': web3.toWei(amount, 'ether'),
-            'gas': 21000,  # Стандартный лимит газа для отправки эфира
-            'gasPrice': web3.toWei(gas_price, 'gwei'),
+            'to': Web3.to_checksum_address(recipient),  # Преобразуем адрес в checksum формат
+            'value': Web3.to_wei(amount, 'ether'),  # Конвертируем ETH в Wei
+            'gas': 400000,  # Стандартный лимит газа для отправки эфира
+            'gasPrice': Web3.to_wei(gas_price, 'gwei'),  # Конвертируем Gwei в Wei
+            'chainId': 8453  # Убедитесь, что это правильный chainId для вашей сети (Base Mainnet)
         }
 
         # Подписываем транзакцию
         signed_tx = web3.eth.account.sign_transaction(tx, private_key)
 
         # Отправляем транзакцию
-        tx_hash = web3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        tx_hash = web3.eth.send_raw_transaction(signed_tx.rawTransaction)
 
         # Печатаем хэш транзакции
-        print(f"Transaction sent to {recipient}: {web3.toHex(tx_hash)}")
+        print(f"Transaction sent to {recipient}: {web3.to_hex(tx_hash)}")
         
         # Задержка между отправками
         time.sleep(delay)
@@ -50,7 +55,7 @@ def send_ether(recipient, amount, nonce, gas_price, delay):
 # Основная функция массовой отправки
 def bulk_send_ether(recipients, amount, gas_price, threads, delay):
     # Получаем текущий nonce отправителя
-    nonce = web3.eth.getTransactionCount(sender_address)
+    nonce = web3.eth.get_transaction_count(sender_address)
 
     # Используем ThreadPoolExecutor для параллельной отправки
     with ThreadPoolExecutor(max_workers=threads) as executor:
