@@ -32,7 +32,7 @@ def send_ether(recipient, amount, nonce, gas_price, delay):
             'nonce': nonce,
             'to': Web3.to_checksum_address(recipient),  # Преобразуем адрес в checksum формат
             'value': Web3.to_wei(amount, 'ether'),  # Конвертируем ETH в Wei
-            'gas': 400000,  # Стандартный лимит газа для отправки эфира
+            'gas': 50000,  # Стандартный лимит газа для отправки эфира
             'gasPrice': Web3.to_wei(gas_price, 'gwei'),  # Конвертируем Gwei в Wei
             'chainId': 8453  # Убедитесь, что это правильный chainId для вашей сети (Base Mainnet)
         }
