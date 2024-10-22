@@ -59,9 +59,9 @@ def bulk_send_ether(recipients, amount, gas_price, threads, delay):
 
 # Параметры
 recipients_file = 'recipients.txt'  # Файл с адресами получателей
-amount_to_send = 0.01  # Сумма, отправляемая каждому получателю в ETH
-gas_price_gwei = 1     # Цена газа в gwei (оптимизируйте по ситуации)
-threads_count = 5      # Количество одновременных потоков
+amount_to_send = 0.000005  # Сумма, отправляемая каждому получателю в ETH
+gas_price_gwei = 0.005     # Цена газа в gwei (оптимизируйте по ситуации)
+threads_count = 10      # Количество одновременных потоков
 delay_between_sends = 2  # Задержка между отправками в секундах
 
 # Чтение адресов из файла
