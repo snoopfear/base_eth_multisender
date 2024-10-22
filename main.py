@@ -6,7 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 web3 = Web3(Web3.HTTPProvider('https://base-mainnet.rpcurl.com'))  # Замените на правильный RPC узел
 
 # Проверяем подключение
-if not web3.isConnected():
+if not web3.is_connected():
     print("Ошибка подключения к сети")
     exit()
 
